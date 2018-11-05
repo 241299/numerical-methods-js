@@ -8,16 +8,11 @@ function drawPlot(where, data) {
     const addTrace = (arr, tr) => arr.push({
         name: tr.name,
         type: 'scatter',
+        mode: 'lines',
         line: {
             shape: 'spline',
             color: tr.color,
             width: 1
-        },
-        marker: {
-            color: tr.color,
-            line: {
-                width: 2.5
-            }
         },
         x: tr.x,
         y: tr.y,
@@ -39,7 +34,7 @@ function drawPlot(where, data) {
         font: {size: 18}
     };
 
-    Plotly.react(where, traces, layout, {responsive: true});
+    Plotly.react(where, traces, layout);
 }
 
 
@@ -55,7 +50,7 @@ function bindSlider(element) {
 
         collectUserInput(0, null, {steps: slideEvt.value.newValue});
 
-        refreshPlot($('#plot-0')[0], plotData[0]); // FIXME
+        refreshPlot($('#plot-0')[0], PLOTS[0]); // FIXME
     });
 }
 

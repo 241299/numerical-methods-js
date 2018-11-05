@@ -1,6 +1,6 @@
 const
-    plotData = [],
-    methods = {
+    PLOTS = [],
+    METHODS = {
         'Euler': computeEuler,
         'ImEuler': computeImprovedEuler,
         'Runge': computeRungeKutta,
@@ -11,11 +11,11 @@ const
 $(document).ready(function () {
     initDefaults();
 
-    refreshPlot($('#plot-0')[0], plotData[0]);
+    refreshPlot($('#plot-0')[0], PLOTS[0]);
 
     bindSlider($('.slider'));
 
-    for (let method in methods) {
+    for (let method in METHODS) {
         setColorPicker(`customise${method}ColorBtn`);
     }
 
@@ -24,7 +24,7 @@ $(document).ready(function () {
 
         const id = modal.data('id');
         collectUserInput(id, modal);
-        refreshPlot($(`#plot-${id}`)[0], plotData[id]);
+        refreshPlot($(`#plot-${id}`)[0], PLOTS[id]);
     });
 
     enableTooltips();
@@ -32,10 +32,20 @@ $(document).ready(function () {
 
 
 function initDefaults() {
-    plotData.push({
+    PLOTS.push({
         name: 'Variant 21',
         f: (x, y) => (y ** 2) * Math.exp(x) - 2 * y,
-        exact: (x) => Math.exp(2 - x) / (Math.exp(x) - Math.exp(x + 1) + Math.exp(2)),
+
+        exactSolution: (x0, y0) => {
+            const c = -Math.exp(-x0) + Math.exp(-2 * x0) / y0;
+            return (x) => Math.exp(-x) / (c * Math.exp(x) + 1)
+        },
+
+        discPoints: (x0, y0) => {
+            const c = -Math.exp(-x0) + Math.exp(-2 * x0) / y0;
+            return [Math.log(-1 / c)]
+        },
+
         x0: 1,
         y0: 1,
         X: 10,
@@ -59,7 +69,7 @@ function initDefaults() {
 
 function collectUserInput(graphCardId, modal, changes) {
     if (changes) {
-        const p = plotData[graphCardId];
+        const p = PLOTS[graphCardId];
         for (let i in changes) {
             if (changes.hasOwnProperty(i) && p.hasOwnProperty(i)) {
                 p[i] = changes[i];
@@ -95,44 +105,20 @@ function collectUserInput(graphCardId, modal, changes) {
             return obj;
         }, {});
 
-    console.log(userData);
-
     // Adding methods
-    for (let method in methods) {
+    for (let method in METHODS) {
         if (userData.hasOwnProperty(method)) {
-            plotData[graphCardId][method] = {
+            PLOTS[graphCardId][method] = {
                 color: modal.find(`#customise${method}ColorBtn`).css('background-color')
             };
         } else {
-            delete plotData[graphCardId][method];
+            delete PLOTS[graphCardId][method];
         }
     }
 
-    if (userData.x0) plotData[graphCardId].x0 = userData.x0.value;
-    if (userData.y0) plotData[graphCardId].y0 = userData.y0.value;
-    if (userData.X) plotData[graphCardId].X = userData.X.value;
-
-    console.log(plotData[graphCardId]);
-
-
-    /*
-        Getting methods and their colors
-     */
-
-    // let data = {
-    //     x0: 0,
-    //     y0: 0,
-    //     X: 0,
-    //     steps: 1,
-    //     EULER: {
-    //         color: '#faf'
-    //     },
-    //     EULER_IMPROVED: {},
-    //     RUNGE_KUTTA: {},
-    //     EXACT: {}
-    // }
-
-    // plots[graphCardId];
+    if (userData.x0) PLOTS[graphCardId].x0 = userData.x0.value;
+    if (userData.y0) PLOTS[graphCardId].y0 = userData.y0.value;
+    if (userData.X) PLOTS[graphCardId].X = userData.X.value;
 }
 
 
@@ -140,20 +126,30 @@ function collectUserInput(graphCardId, modal, changes) {
  * Computes the plots and triggers GUI refresh
  */
 
-function refreshPlot(plot, dataIn) {
-    const plotData = {};
+// TODO Handle discontinuity
 
-    for (let method in methods)
+function refreshPlot(plot, dataIn) {
+    const plottingData = {};
+
+    for (let method in METHODS)
         if (dataIn.hasOwnProperty(method)) {
-            plotData[method] = methods[method](
-                (method === 'Exact') ? dataIn.exact : dataIn.f,
-                dataIn.x0,
-                dataIn.y0,
-                (dataIn.X - dataIn.x0) / dataIn.steps,
-                dataIn.X
+
+            const
+                x0 = dataIn.x0,
+                y0 = dataIn.y0,
+                X = dataIn.X,
+                step = (X - x0) / (dataIn.steps > 0 ? dataIn.steps : 1),
+                func = (method === 'Exact') ? dataIn.exactSolution(x0, y0) : dataIn.f;
+
+            plottingData[method] = METHODS[method](
+                func,
+                x0,
+                y0,
+                step,
+                X
             );
-            plotData[method].color = dataIn[method].color;
+            plottingData[method].color = dataIn[method].color;
         }
 
-    drawPlot(plot, plotData);
+    drawPlot(plot, plottingData);
 }
