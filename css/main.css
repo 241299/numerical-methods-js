@@ -29,7 +29,7 @@ body {
     margin-bottom: 0;
 }
 
-.customise-btn {
+.modal-customise-btn {
     height: 20px;
     background-color: #1da2ff; /*FIXME*/
 }

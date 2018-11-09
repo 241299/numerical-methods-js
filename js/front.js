@@ -1,7 +1,21 @@
+const
+    CUSTOMISE_MODAL = $('#customiseModal');
+
+
 /**
- * Draws a plot using the
- * @param where Where to draw the plot
- * @param data {{Exact:{}, Euler:{}, ImEuler:{}, Runge:{}}} The plotting data: method, x, y, color
+ * Gets the id of the graph bound to the element
+ * @param element Control element: a button, a slider, or whatever. jQuery node object
+ */
+
+function getGraphId(element) {
+    return element.parents('.graph-card').first().data('id')
+}
+
+
+/**
+ * Draws a plot using Plot.ly
+ * @param where DOM node where to draw the plot
+ * @param data {{Exact:{x: [], y: [], color: string}, Euler:{}, ImEuler:{}, Runge:{}}} The plotting data: method, x, y, color
  */
 
 function drawPlot(where, data) {
@@ -39,18 +53,37 @@ function drawPlot(where, data) {
 
 
 /**
- * Function for creating a slider out of a text field
+ * Function for creating a slider out of a text field and binding it to refresh the corresponding plot
  * @param element
  */
 
 function bindSlider(element) {
     element.slider();
+
+    /* Introducing constants to capture them and avoid recalculations */
+    const
+        id = getGraphId(element),
+        textLabel = element.parent().children('.grid-steps');
+
+
     element.on('change', function (slideEvt) {
-        element.parent().children('.grid-steps').text(slideEvt.value.newValue);
+        textLabel.text(slideEvt.value.newValue);
 
-        collectUserInput(0, null, {steps: slideEvt.value.newValue});
+        collectUserInput(id, null, {steps: slideEvt.value.newValue});
 
-        refreshPlot($('#plot-0')[0], PLOTS[0]); // FIXME
+        refreshPlot($('#plot-' + id)[0], PLOTS[id]);
+    });
+}
+
+
+function bindCustomiseBtn(btn) {
+    btn.on('click', function () {
+        CUSTOMISE_MODAL.modal('show');
+
+        const id = getGraphId($(this));
+        CUSTOMISE_MODAL.data('id', id);
+
+        // TODO Modify the modal to show the current state
     });
 }
 
@@ -84,7 +117,7 @@ function setColorPicker(elementId) {
  */
 
 function bindModalApply(applyBtn, callback) {
-    applyBtn.on('click', () => callback(applyBtn.parents('.modal').first()));
+    applyBtn.on('click', () => callback(CUSTOMISE_MODAL));
 }
 
 

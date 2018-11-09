@@ -20,19 +20,19 @@ html(lang='en')
                 br
                 br
             .row
-                .col-lg-5.col-sm-12.graph-card(style='background-color: #f0f0f0;', data-id='1')
+                .col-lg-5.col-sm-12.graph-card(style='background-color: #f0f0f0;', data-id=0)
                     .p-3
                         .row
                             .col-lg-6.col-sm-6
                                 b Grid steps:&nbsp;
-                                span.grid-steps 3
+                                span.grid-steps 200
                                 br
-                                input.slider(type='text' data-slider-min='1' data-slider-max='20' data-slider-step='1' data-slider-value='3')
+                                input.slider(type='text' data-slider-min='1' data-slider-max='500' data-slider-step='1' data-slider-value='200')
                             .col-lg-6.col-sm-6.text-right
                                 br.d-inline.d-sm-none
-                                button.btn.btn-primary(type='button', data-toggle='modal', data-target='#customiseModal') Customise
+                                button.btn.btn-primary.customise-btn Customise
                     .h-100.p-1
-                        #plot-0
+                        .plot#plot-0
                         br
                 .col-lg-2
                 .col-lg-5.col-sm-12.p-sm-2
@@ -70,21 +70,4 @@ html(lang='en')
 
         // Scripts
 
-        script(src='js/jquery.slim.min.js')
-        script(src='https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js' integrity='sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q' crossorigin='anonymous')
-        //script(src='https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js' integrity='sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl' crossorigin='anonymous')
-        script(src='js/bootstrap.js')
-
-        // Slider
-        script(src='js/bootstrap-slider.min.js')
-
-        // Plot.ly
-        script(src='https://cdn.plot.ly/plotly-latest.min.js')
-
-        // Colorpicker
-        script(src='./js/bootstrap-colorpicker.min.js')
-
-        // Numeric methods logic
-        script(src='./js/num.methods.js')
-        script(src='./js/front.js')
-        script(src='./js/main.js')
+        +scripts

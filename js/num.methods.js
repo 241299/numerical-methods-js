@@ -13,7 +13,7 @@ function findApproximation(nextY, x0, y0, step, X) {
         x = [x0],
         y = [y0];
 
-    for (let i = 0; x[i] < X; i++) {
+    for (let i = 0; x[i] + step < X; i++) {
         x.push(x[i] + step);
         y.push(nextY(x[i], y[i]));
     }
