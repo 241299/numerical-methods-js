@@ -21,7 +21,6 @@ html(lang='en')
                 br
             .row
                 +graph-card(0, false)
-                //.col-lg-2
                 +graph-card(1, true)
 
             br
@@ -39,11 +38,11 @@ html(lang='en')
                             p.h5 Choose graphs to display
                             .row
                                 .col-5.offset-1
-                                    span.font-weight-bold Method
+                                    span.font-weight-bold.modal-select-all-methods Method
                                 .col-3
                                     span.font-weight-bold Color
                                 .col-3
-                                    span.font-weight-bold Display errors
+                                    span.font-weight-bold.modal-select-all-errors Display errors
                             +graph-checkbox('Exact', 'Exact solution', true, '#1da2ff', false)
                             +graph-checkbox('Euler', 'Euler', true, '#f6912d', true)
                             +graph-checkbox('ImEuler', 'Improved Euler', false, '#eef644', true)

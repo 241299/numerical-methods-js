@@ -144,6 +144,30 @@ function bindModalApply(applyBtn, callback) {
 }
 
 
+function beautify() {
+    enableTooltips();
+    bindModalSelectAll();
+}
+
+
+function bindModalSelectAll() {
+    const flags = [false, false];
+    const methodCheckboxes = $('.modal-mth-chk');
+    const errorCheckboxes = $('.modal-err-chk');
+
+    $('.modal-select-all-methods').on('click', function () {
+        methodCheckboxes.prop('checked', !flags[0]);
+        methodCheckboxes.trigger('change');
+        flags[0] = !flags[0];
+    });
+
+    $('.modal-select-all-errors').on('click', function () {
+        errorCheckboxes.prop('checked', !flags[1]);
+        errorCheckboxes.trigger('change');
+        flags[1] = !flags[1];
+    });
+}
+
 /**
  * Enables Bootstrap tooltips
  */

@@ -33,3 +33,7 @@ body {
     height: 20px;
     background-color: #1da2ff;
 }
+
+.modal-select-all-methods, .modal-select-all-errors {
+    cursor: pointer;
+}

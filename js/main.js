@@ -34,7 +34,7 @@ $(document).ready(function () {
         // NB Plots for solutions and global errors are unlinked (because of initial design).
     });
 
-    enableTooltips();
+    beautify();
 });
 
 
@@ -180,8 +180,6 @@ function refreshSolutionsPlot(where, dataIn) {
     /* Computing */
     const methodsResults = {};
 
-    console.log(dataIn);
-
     for (let method in METHODS) {
         if (method === 'Exact') {
             methodsResults[method] = computeMethod(
@@ -220,7 +218,6 @@ function refreshSolutionsPlot(where, dataIn) {
 
         if (dataIn[method].displayErrorPlot) {
             plottingData[method + 'Err'] = methodsResults[method + 'Err'];
-            console.log(plottingData);
             plottingData[method + 'Err'].color = dataIn[method].color;
         }
     }
@@ -230,6 +227,5 @@ function refreshSolutionsPlot(where, dataIn) {
 
 
 function refreshGlobalErrorsPlot(plot, dataIn) {
-
     console.log(dataIn);
 }

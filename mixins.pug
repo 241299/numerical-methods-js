@@ -1,5 +1,5 @@
 mixin graph-card(id, isErrorPlot)
-    .col-lg-12.col-sm-12.graph-card(style='background-color: #f0f0f0;', data-id=id)
+    .col-lg-12.col-sm-12.m-sm-2.graph-card(style='background-color: #f0f0f0;', data-id=id)
         .p-3
             .row
                 if (!isErrorPlot)
@@ -23,16 +23,18 @@ mixin graph-checkbox(name, label, checked, color, errorChk)
         .col-5.offset-1.mt-auto
             script
                 != 'document.addEventListener("DOMContentLoaded", function() {'
+                != 'var mthChk = $("#' + mthChkId + '");'
+                != 'var errChk = $("#' + errChkId + '");'
                 != 'var listener = function() {'
-                != 'if ($("#' + mthChkId + '").prop("checked") || $("#' + errChkId + '").prop("checked")) {'
+                != 'if (mthChk.length && mthChk.prop("checked") || errChk.length && errChk.prop("checked")) {'
                 != '$("#' + btnId + '").show();\n'
                 != '} else $("#' + btnId + '").hide();'
                 != '};'
-                != '$("#' + mthChkId + '").on("click", listener);'
-                != '$("#' + errChkId + '").on("click", listener);'
+                != '$("#' + mthChkId + '").on("change", listener);'
+                != '$("#' + errChkId + '").on("change", listener);'
                 != '});'
             .form-check
-                input.form-check-input(
+                input.form-check-input.modal-mth-chk(
                 type="checkbox", id=mthChkId,
                 name=name,
                 checked=checked,
@@ -48,7 +50,7 @@ mixin graph-checkbox(name, label, checked, color, errorChk)
         .col-3
             if errorChk
                 .form-check
-                    input.form-check-input(
+                    input.form-check-input.modal-err-chk(
                     type="checkbox", id=errChkId,
                     name=name+'Err',
                     checked=false,
