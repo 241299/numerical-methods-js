@@ -1,10 +1,8 @@
 const
     PLOTS = [],
     PLOT_TYPES = {
-        SOLUTIONS: 1,
-        LOCAL_ERRORS: 2,
-        SOLUTIONS_ERRORS: 3,
-        GLOBAL_ERRORS: 4
+        SOLUTIONS_ERRORS: 1,
+        GLOBAL_ERRORS: 2
     },
     METHODS = {
         'Euler': computeEuler,
@@ -32,6 +30,8 @@ $(document).ready(function () {
         const id = modal.data('id');
         collectUserInput(id, modal);
         refreshPlot($(`#plot-${id}`)[0], PLOTS[id]);
+
+        // fixme Plots for solutions and global errors are unlinked (because of initial design).
     });
 
     enableTooltips();
@@ -42,7 +42,7 @@ function initDefaults() {
     PLOTS.push({
         /* Metadata */
         name: 'Variant 21',
-        plotType: PLOT_TYPES.SOLUTIONS,
+        plotType: PLOT_TYPES.SOLUTIONS_ERRORS,
 
         /* Function and exact solution */
         f: (x, y) => (y ** 2) * Math.exp(x) - 2 * y,
@@ -65,43 +65,20 @@ function initDefaults() {
 
         /* Plotting data */
         Exact: {
+            displayPlot: true,
             color: '#1da2ff'
         },
         Euler: {
+            displayPlot: true,
             color: '#f6912d'
+        },
+        ImEuler: {
+            displayPlot: false
+        },
+        Runge: {
+            displayPlot: false
         }
     });
-
-    /* Variant 2 solved. Uncomment to use it instead */
-    // PLOTS.push({
-    //     /* Metadata */
-    //     name: 'Variant 2',
-    //     plotType: PLOT_TYPES.SOLUTIONS,
-    //
-    //     /* Function and exact solution */
-    //     f: (x, y) => -2 * y + 4 * x,
-    //
-    //     exactSolution: (x0, y0) => {
-    //         const c = (y0 - 2*x0 + 1) / Math.exp(-2 * x0);
-    //         return (x) => c * Math.exp(-2 * x) + 2 * x - 1
-    //     },
-    //
-    //     discPoints: () => [],
-    //
-    //     /* Problem statement */
-    //     x0: 0,
-    //     y0: 0,
-    //     X: 3,
-    //     steps: 3,
-    //
-    //     /* Plotting data */
-    //     Exact: {
-    //         color: '#1da2ff'
-    //     },
-    //     Euler: {
-    //         color: '#f6912d'
-    //     }
-    // });
 }
 
 
@@ -141,15 +118,14 @@ function collectUserInput(graphCardId, modal, changes) {
             return obj;
         }, {});
 
-    /* Adding or removing methods to show */
+
+    /* Adding or removing methods and respective errors to show */
     for (let method in METHODS) {
-        if (userData.hasOwnProperty(method)) {
-            PLOTS[graphCardId][method] = {
-                color: modal.find(`#customise${method}ColorBtn`).css('background-color')
-            };
-        } else {
-            delete PLOTS[graphCardId][method];
-        }
+        const methodPlot = PLOTS[graphCardId][method];
+        methodPlot.color = modal.find(`#customise${method}ColorBtn`).css('background-color');
+
+        methodPlot.displayPlot = userData.hasOwnProperty(method);
+        methodPlot.displayErrorPlot = userData.hasOwnProperty(method + 'Err');
     }
 
     /* Initial conditions and limit */
@@ -162,13 +138,28 @@ function collectUserInput(graphCardId, modal, changes) {
 
 /**
  * Computes the plots and triggers GUI refresh. Part of the controller layer.
- * @param plot The DOM node where to draw the plot
- * @param dataIn An object containing all of the following: plot metadata, IVP statement and exact solution function
+ * @param where The DOM node where to draw the plot
+ * @param plotData An object containing all of the following: plot metadata, IVP statement and exact solution function
  */
 
-function refreshPlot(plot, dataIn) {
+function refreshPlot(where, plotData) {
+    switch (plotData.plotType) {
+        case PLOT_TYPES.SOLUTIONS_ERRORS:
+            refreshSolutionsPlot(where, plotData);
+            break;
+        case PLOT_TYPES.GLOBAL_ERRORS:
+            refreshGlobalErrorsPlot(where, plotData);
+            break;
+    }
+}
+
+
+function refreshSolutionsPlot(where, dataIn) {
     const
-        plottingData = {},
+        plottingData = {
+            xTitle: 'x Axis',
+            yTitle: 'y Axis'
+        },
         x0 = dataIn.x0,
         y0 = dataIn.y0,
         X = dataIn.X,
@@ -180,7 +171,7 @@ function refreshPlot(plot, dataIn) {
         );
 
     for (let method in METHODS)
-        if (dataIn.hasOwnProperty(method)) {
+        if (dataIn[method].displayPlot) {
 
             const methodResults = plottingData[method] = {x: [], y: []};
 
@@ -216,7 +207,10 @@ function refreshPlot(plot, dataIn) {
             plottingData[method].color = dataIn[method].color;
         }
 
-    // TODO check dataIn.plotType
+    drawPlot(where, plottingData);
+}
 
-    drawPlot(plot, plottingData);
+
+function refreshGlobalErrorsPlot(plot, dataIn) {
+    console.log(dataIn);
 }

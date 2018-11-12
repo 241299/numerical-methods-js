@@ -1,11 +1,12 @@
 mixin graph-checkbox(name, label, checked, color)
-    - var id=`customise${name}Chk`
+    - var mthChkId=`customise${name}Chk`
+    - var errChkId=`customise${name}ErrChk`
     - var btnId=`customise${name}ColorBtn`
     .form-group.row
         .col-5.offset-1.mt-auto
             script
                 != 'document.addEventListener("DOMContentLoaded", function() {'
-                != '$("#' + id + '").on("click", function(ev) {'
+                != '$("#' + mthChkId + '").on("click", function(ev) {'
                 != 'if(this.checked) {'
                 != '$("#' + btnId + '").show();\n'
                 != '} else $("#' + btnId + '").hide();'
@@ -13,18 +14,26 @@ mixin graph-checkbox(name, label, checked, color)
                 != '});'
             .form-check
                 input.form-check-input(
-                type="checkbox", id=id,
+                type="checkbox", id=mthChkId,
                 name=name,
                 checked=checked,
                 autocomplete="off"
                 )
-                label(for=id).h5.font-weight-light.customise-label=label
-        .col-auto.mt-sm-auto.mb-auto
+                label(for=mthChkId).h5.font-weight-light.customise-label=label
+        .col-3.mt-sm-auto.mb-auto
             a.btn.btn-primary.modal-customise-btn(
             id=btnId, title="Pick a color",
             style=`background-color: ${color};border-color: ${color};` + (checked ? '' : 'display: none;'),
             data-toggle="tooltip" data-placement="top"
             ) &nbsp;
+        .col-3
+            .form-check
+                input.form-check-input(
+                type="checkbox", id=errChkId,
+                name=name+'Err',
+                checked=false,
+                autocomplete="off"
+                )
 
 mixin scripts
     script(src='js/jquery.slim.min.js')

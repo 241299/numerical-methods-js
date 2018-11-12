@@ -51,6 +51,13 @@ html(lang='en')
                     .modal-body
                         form
                             p.h5 Choose graphs to display
+                            .row
+                                .col-5.offset-1
+                                    span.font-weight-bold Method
+                                .col-3
+                                    span.font-weight-bold Color
+                                .col-3
+                                    span.font-weight-bold Display errors
                             +graph-checkbox('Exact', 'Exact solution', true, '#1da2ff')
                             +graph-checkbox('Euler', 'Euler', true, '#f6912d')
                             +graph-checkbox('ImEuler', 'Improved Euler', false, '#eef644')
@@ -59,11 +66,11 @@ html(lang='en')
                             p.h5 Change initial conditions
                             .row
                                 label(for='customiseModalX0').col-1.offset-1.offset-md-1 x<sub>0</sub>
-                                input#customiseModalX0(type='text' name='x0' placeholder='x₀').col-5.col-md-2
+                                input#customiseModalX0(type='text' name='x0' placeholder='1').col-5.col-md-2
                                 label(for='customiseModalY0').col-1.ml-2 y<sub>0</sub>
-                                input#customiseModalY0(type='text' name='y0' placeholder='y₀').col-5.col-md-2
+                                input#customiseModalY0(type='text' name='y0' placeholder='1').col-5.col-md-2
                                 label(for='customiseModalX').col-1.ml-2 X
-                                input#customiseModalX(type='text' name='X' placeholder='X').col-5.col-md-2
+                                input#customiseModalX(type='text' name='X' placeholder='10').col-5.col-md-2
                     .modal-footer
                         button.btn.btn-secondary(data-dismiss='modal') Close
                         button#customiseModalApplyBtn.btn.btn-primary Apply

@@ -15,7 +15,13 @@ function getGraphId(element) {
 /**
  * Draws a plot using Plot.ly
  * @param where DOM node where to draw the plot
- * @param data {{Exact:{x: [], y: [], color: string}, Euler:{}, ImEuler:{}, Runge:{}}} The plotting data: method, x, y, color
+ * @param data {{
+ *      xTitle: string, yTitle: string,
+ *      [Exact]:{x: [], y: [], color: string},
+ *      [Euler]:{x: [], y: [], color: string},
+ *      [ImEuler]:{x: [], y: [], color: string},
+ *      [Runge]:{x: [], y: [], color: string}
+ * }} The plotting data: axis titles, methods(x, y, color)
  */
 
 function drawPlot(where, data) {
@@ -26,7 +32,7 @@ function drawPlot(where, data) {
         line: {
             shape: 'spline',
             color: tr.color,
-            width: 1
+            width: tr.width || 1 / 2
         },
         x: tr.x,
         y: tr.y,
@@ -35,17 +41,34 @@ function drawPlot(where, data) {
     // Adding traces (independently from logic)
     const traces = [];
     for (let i in data)
-        if (data.hasOwnProperty(i))
+        if (data.hasOwnProperty(i) && i !== 'xTitle' && i !== 'yTitle')
             addTrace(traces, {
                 name: i,
                 color: data[i].color,
+                width: data[i].width,
                 x: data[i].x,
                 y: data[i].y
             });
 
     // Defining layout
     const layout = {
-        font: {size: 18}
+        font: {size: 18},
+        xaxis: {
+            title: data.xTitle,
+            titlefont: {
+                family: 'Courier New, monospace',
+                size: 18,
+                color: '#7f7f7f'
+            }
+        },
+        yaxis: {
+            title: data.yTitle,
+            titlefont: {
+                family: 'Courier New, monospace',
+                size: 18,
+                color: '#7f7f7f'
+            }
+        }
     };
 
     Plotly.react(where, traces, layout);
