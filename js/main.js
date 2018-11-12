@@ -15,7 +15,8 @@ const
 $(document).ready(function () {
     initDefaults();
 
-    refreshPlot($('.graph-card[data-id="0"] .plot')[0], PLOTS[0]);
+    refreshPlot($('#plot-0')[0], PLOTS[0]);
+    refreshPlot($('#plot-1')[0], PLOTS[1]);
 
     bindSlider($('.slider'));
     bindCustomiseBtn($('.customise-btn'));
@@ -227,5 +228,33 @@ function refreshSolutionsPlot(where, dataIn) {
 
 
 function refreshGlobalErrorsPlot(plot, dataIn) {
-    console.log(dataIn);
+    const
+        plottingData = {
+            xTitle: 'step',
+            yTitle: 'error'
+        },
+        errors = computeGlobalTruncationErrors(dataIn, METHODS);
+
+    /* Filling metadata */
+    for (let m in METHODS) {
+        if (errors[0].hasOwnProperty(m)) {
+            plottingData[m] = {
+                color: dataIn[m].color,
+                x: [],
+                y: []
+            }
+        }
+    }
+
+    /* Filling plot data */
+    for (let e of errors) {
+        for (let method in METHODS) {
+            if (e.hasOwnProperty(method)) {
+                plottingData[method].x.push(e.steps);
+                plottingData[method].y.push(e[method]);
+            }
+        }
+    }
+
+    drawPlot(plot, plottingData);
 }

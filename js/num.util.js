@@ -118,3 +118,59 @@ function computeMethodError(xArr, yExpectedArr, yActualArr) {
         y: diffArr
     }
 }
+
+
+
+
+function computeGlobalTruncationErrors(dataIn, methods) {
+
+    // fixme Some code is copy-pasted (very bad)
+    const
+        errors = [],
+
+        x0 = dataIn.x0,
+        y0 = dataIn.y0,
+        X = dataIn.X,
+
+        intervals = buildIntervals(
+            x0, X,
+            dataIn.discPoints ? dataIn.discPoints(x0, y0) : undefined
+        ),
+
+        exactSolution = dataIn.exactSolution(x0, y0);
+
+    for (let i = 10; i < 500; i += 5) {
+        const exactResults = {};
+        errors.push({
+            steps: i
+        });
+
+        for (let method in methods) {
+            if (methods.hasOwnProperty(method)) {
+
+                const methodResults = computeMethod(
+                    methods[method],
+                    method === 'Exact' ? exactSolution : dataIn.f,
+                    intervals,
+                    exactSolution,
+                    (X - x0) / i
+                );
+
+                if (method === 'Exact') {
+                    exactResults.x = methodResults.x;
+                    exactResults.y = methodResults.y;
+                } else {
+                    const methodErrors = computeMethodError(
+                        exactResults.x,
+                        exactResults.y,
+                        methodResults.y,
+                    );
+
+                    errors[errors.length - 1][method] = Math.max.apply(Math, methodErrors.y) || null;
+                }
+            }
+        }
+    }
+
+    return errors
+}
