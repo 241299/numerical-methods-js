@@ -1,4 +1,21 @@
-mixin graph-checkbox(name, label, checked, color)
+mixin graph-card(id, isErrorPlot)
+    .col-lg-12.col-sm-12.graph-card(style='background-color: #f0f0f0;', data-id=id)
+        .p-3
+            .row
+                if (!isErrorPlot)
+                    .col-lg-6.col-sm-6
+                        b Grid steps:&nbsp;
+                        span.grid-steps 200
+                        br
+                        input.slider(type='text' data-slider-min='1' data-slider-max='500' data-slider-step='1' data-slider-value='200')
+                .col-lg-6.col-sm-6.text-sm-right(class=(isErrorPlot ? 'offset-6' : ''))
+                    br.d-inline.d-sm-none
+                    button.btn.btn-primary.customise-btn Customise
+        .h-100.p-1
+            .plot(id='plot-' + id)
+            br
+
+mixin graph-checkbox(name, label, checked, color, errorChk)
     - var mthChkId=`customise${name}Chk`
     - var errChkId=`customise${name}ErrChk`
     - var btnId=`customise${name}ColorBtn`
@@ -6,11 +23,13 @@ mixin graph-checkbox(name, label, checked, color)
         .col-5.offset-1.mt-auto
             script
                 != 'document.addEventListener("DOMContentLoaded", function() {'
-                != '$("#' + mthChkId + '").on("click", function(ev) {'
-                != 'if(this.checked) {'
+                != 'var listener = function() {'
+                != 'if ($("#' + mthChkId + '").prop("checked") || $("#' + errChkId + '").prop("checked")) {'
                 != '$("#' + btnId + '").show();\n'
                 != '} else $("#' + btnId + '").hide();'
-                != '});'
+                != '};'
+                != '$("#' + mthChkId + '").on("click", listener);'
+                != '$("#' + errChkId + '").on("click", listener);'
                 != '});'
             .form-check
                 input.form-check-input(
@@ -27,13 +46,14 @@ mixin graph-checkbox(name, label, checked, color)
             data-toggle="tooltip" data-placement="top"
             ) &nbsp;
         .col-3
-            .form-check
-                input.form-check-input(
-                type="checkbox", id=errChkId,
-                name=name+'Err',
-                checked=false,
-                autocomplete="off"
-                )
+            if errorChk
+                .form-check
+                    input.form-check-input(
+                    type="checkbox", id=errChkId,
+                    name=name+'Err',
+                    checked=false,
+                    autocomplete="off"
+                    )
 
 mixin scripts
     script(src='js/jquery.slim.min.js')
@@ -46,7 +66,7 @@ mixin scripts
     // Plot.ly
     script(src='https://cdn.plot.ly/plotly-latest.min.js')
 
-    // Colorpicker
+    // Color-picker
     script(src='./js/bootstrap-colorpicker.min.js')
 
     // Numeric methods logic

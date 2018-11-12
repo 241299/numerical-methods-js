@@ -5,10 +5,10 @@ const
         GLOBAL_ERRORS: 2
     },
     METHODS = {
+        'Exact': computeExactSolution,
         'Euler': computeEuler,
         'ImEuler': computeImprovedEuler,
-        'Runge': computeRungeKutta,
-        'Exact': computeExactSolution
+        'Runge': computeRungeKutta
     };
 
 
@@ -31,7 +31,7 @@ $(document).ready(function () {
         collectUserInput(id, modal);
         refreshPlot($(`#plot-${id}`)[0], PLOTS[id]);
 
-        // fixme Plots for solutions and global errors are unlinked (because of initial design).
+        // NB Plots for solutions and global errors are unlinked (because of initial design).
     });
 
     enableTooltips();
@@ -78,6 +78,10 @@ function initDefaults() {
         Runge: {
             displayPlot: false
         }
+    });
+    PLOTS.push({
+        plotType: PLOT_TYPES.GLOBAL_ERRORS,
+        linkTo: PLOTS[0]
     });
 }
 
@@ -148,7 +152,10 @@ function refreshPlot(where, plotData) {
             refreshSolutionsPlot(where, plotData);
             break;
         case PLOT_TYPES.GLOBAL_ERRORS:
-            refreshGlobalErrorsPlot(where, plotData);
+            refreshGlobalErrorsPlot(
+                where,
+                plotData.linkTo || plotData
+            );
             break;
     }
 }
@@ -170,47 +177,59 @@ function refreshSolutionsPlot(where, dataIn) {
             dataIn.discPoints ? dataIn.discPoints(x0, y0) : undefined
         );
 
-    for (let method in METHODS)
-        if (dataIn[method].displayPlot) {
+    /* Computing */
+    const methodsResults = {};
 
-            const methodResults = plottingData[method] = {x: [], y: []};
+    console.log(dataIn);
 
-            /*
-             * Computing function on intervals.
-             * At discontinuity point, x_disc is pushed into x array, NULL is pushed into y array
-             */
+    for (let method in METHODS) {
+        if (method === 'Exact') {
+            methodsResults[method] = computeMethod(
+                METHODS.Exact,
+                dataIn.exactSolution(x0, y0),
+                intervals,
+                dataIn.exactSolution(x0, y0),
+                step
+            );
+        } else if (dataIn[method].displayPlot || dataIn[method].displayErrorPlot) {
+            methodsResults[method] = computeMethod(
+                METHODS[method],
+                dataIn.f,
+                intervals,
+                dataIn.exactSolution(x0, y0),
+                step
+            );
 
-            for (let interval of intervals) {
-                const intervalResults = METHODS[method](
-                    (method === 'Exact')                                    // Function to be evaluated
-                        ? dataIn.exactSolution(x0, y0)                          // either the exact solution
-                        : dataIn.f,                                             // or the method approximation
-                    interval.start,                                         // The left end of interval
-                    dataIn.exactSolution(x0, y0)(interval.start),           // The value at the left end (initial value)
-                    step,                                                   // Grid step
-                    interval.end                                            // The right limit of interval
+            // NB Possible bug: exact solution have not been computed yet. Not caused because Exact is the first
+            if (dataIn[method].displayErrorPlot) {
+                methodsResults[method + 'Err'] = computeMethodError(
+                    methodsResults.Exact.x,
+                    methodsResults.Exact.y,
+                    methodsResults[method].y
                 );
-
-                /* Merging the results with the previous ones */
-                mergeXYArrays(
-                    methodResults.x, intervalResults.x,
-                    methodResults.y, intervalResults.y
-                );
-
-                /* Pushing discontinuity itself (to be reflected on plot) */
-                if (interval.discontinuity) {
-                    methodResults.x.push(interval.discontinuity);
-                    methodResults.y.push(null);
-                }
             }
+        }
+    }
 
+    /* Adding to plot */
+    for (let method in METHODS) {
+        if (dataIn[method].displayPlot) {
+            plottingData[method] = methodsResults[method];
             plottingData[method].color = dataIn[method].color;
         }
+
+        if (dataIn[method].displayErrorPlot) {
+            plottingData[method + 'Err'] = methodsResults[method + 'Err'];
+            console.log(plottingData);
+            plottingData[method + 'Err'].color = dataIn[method].color;
+        }
+    }
 
     drawPlot(where, plottingData);
 }
 
 
 function refreshGlobalErrorsPlot(plot, dataIn) {
+
     console.log(dataIn);
 }

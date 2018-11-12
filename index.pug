@@ -20,23 +20,9 @@ html(lang='en')
                 br
                 br
             .row
-                .col-lg-5.col-sm-12.graph-card(style='background-color: #f0f0f0;', data-id=0)
-                    .p-3
-                        .row
-                            .col-lg-6.col-sm-6
-                                b Grid steps:&nbsp;
-                                span.grid-steps 200
-                                br
-                                input.slider(type='text' data-slider-min='1' data-slider-max='500' data-slider-step='1' data-slider-value='200')
-                            .col-lg-6.col-sm-6.text-right
-                                br.d-inline.d-sm-none
-                                button.btn.btn-primary.customise-btn Customise
-                    .h-100.p-1
-                        .plot#plot-0
-                        br
-                .col-lg-2
-                .col-lg-5.col-sm-12.p-sm-2
-                    button.btn.btn-primary +
+                +graph-card(0, false)
+                //.col-lg-2
+                +graph-card(1, true)
 
             br
             p.text-right.text-secondary Copyright (c) 2018, Marsel Shayhin
@@ -58,10 +44,10 @@ html(lang='en')
                                     span.font-weight-bold Color
                                 .col-3
                                     span.font-weight-bold Display errors
-                            +graph-checkbox('Exact', 'Exact solution', true, '#1da2ff')
-                            +graph-checkbox('Euler', 'Euler', true, '#f6912d')
-                            +graph-checkbox('ImEuler', 'Improved Euler', false, '#eef644')
-                            +graph-checkbox('Runge', 'Runge-Kutta', false, '#00f69d')
+                            +graph-checkbox('Exact', 'Exact solution', true, '#1da2ff', false)
+                            +graph-checkbox('Euler', 'Euler', true, '#f6912d', true)
+                            +graph-checkbox('ImEuler', 'Improved Euler', false, '#eef644', true)
+                            +graph-checkbox('Runge', 'Runge-Kutta', false, '#00f69d', true)
                             br
                             p.h5 Change initial conditions
                             .row
