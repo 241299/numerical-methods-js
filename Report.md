@@ -1,43 +1,53 @@
-# Programming Assignment Report
-**Project**: Numerical Methods for solving differential equations\
-**Student**: Marsel Shayhin\
-**Group**: B17–02
+**WARNING!** This file is not displayed correctly on GitHub. 
+Please view the [Web Version](https://www.evernote.com/l/AfL6zo_mXXhBiYHfXXKKpMZAgFMNcpv3_3I/) 
 
-## Overview
-1. Problem statement
-2. Exact solution of the problem and approximations
-3. The structure of the program
-4. Screenshots
-4. Method descriptions
-5. Method errors
+
+# Programming Assignment Report
+**Project**:    Numerical Methods for solving differential equations\
+**Student**: Marsel Shayhin\
+**Group**: B17–02
+
+## Table of contents
+[TOC]
 
 ## Problem Statement
 The **Initial Value Problem** is the following:
-> y' = f(x, y),\
-> y(x<sub>0</sub>) = y<sub>0</sub>,\
-> x ∈ \[x<sub>0</sub>, X\],
+$$ \begin{cases} y' = f(x, y) \\ y(x_0) = y_0 \\ x \in [x_0, X], && where&f(x, y) = y^2 e^x - 2y \end{cases} $$
 
-where _f(x, y) = y<sup>2</sup>e<sup>x</sup> − 2y_.\
 Default values are:
-_x<sub>0</sub> = 1, y<sub>0</sub> = 1, X = 10_.
+$$ \begin{cases} x_0 = 1, \\ y_0 = 1, \\ X = 10. \end{cases} $$
 
-## Problem Soloutions
+
+## Problem Solutions
 ### Exact solution
-The general solution of the problem is _y(x) = e<sup>-x</sup> / (c<sub>1</sub>·e<sup>x</sup> + 1)_
+The general solution of the problem is $ y(x) = \dfrac{e^{-x}}{c_1e^x + 1} $
 
-The solution of the IVP is _e<sup>2 − x</sup> / (e<sup>x</sup> − e<sup>x + 1</sup> + e<sup>2</sup>)_
+### Computing IVP solution
+In order to compute the exact solution of the Initial Value Problem, we substitute $y_0$ and $x_0$ in the above expression,
+getting the following expression for $c1$:
+$$ c_1 = -e^{-x_0} + \dfrac{e^{-2x_0}}{y_0}$$
 
-### Approximations
+Instantiating $c_1$ with $x_0 = 1, y_0=1 $, we get $ y_{exact}(x) = \dfrac{e^{2-x}}{e^x - e^{x+1} + e^2} $
+
+### Approximation using Numerical Methods
 The program uses three methods of approximations:
 - Euler method
 - Improved Euler Method
 - Runge-Kutta Method
 
+#### Note
+Since the exact solution has the discontinuity point at $x_{disc} = ln\dfrac{-1}{c_1}$, the approximation has to include two parts:
+- before the discontinuity point,
+- after the discontinuity point.
+
+The values to start computation are $x_0, y_0$ and $x_{disc}, y_{exact}(x_{disc})$ respectively.
+
 ## Program Structure
-The program is structured as 3 modules:
+The program is structured as 4 modules:
 1. Numerical Methods (`js/num.methods.js`). It is the computational core of the program
-2. Web View (`.pug`, `.html`, `.css` files and `js/front.js`). The View part implemented as the combination of HTML and JavaScript
-3. Main (`main.js`) — the controller. Serves as the bridge between GUI and logic.
+2. Numerical Utilities (`js/num.util.js`). This is the helper script for delegating the work from controller.
+3. Web View (`.pug`, `.html`, `.css` files and `js/front.js`). The View part implemented as the combination of HTML and JavaScript
+4. Main (`main.js`) — the controller. Serves as the bridge between GUI and logic.
 
 ### Program Executable
 To start up the program, simply open `index.html` in your browser.
@@ -46,7 +56,24 @@ To start up the program, simply open `index.html` in your browser.
 It is strongly recommended **NOT** to use old browser versions such as IE9.
 Author does not guarantee correct code execution on such systems.
 
-## Screenshots
-![alt text](./img/Num%20Methods%201.png)
+## Method descriptions
+For full method descriptions, please check the [code documentation](https://github.com/241299/numerical-methods-js) 
 
-![alt text](./img/Num%20Methods%202.png)
+
+## Computation errors
+
+Errors differ depending on the method and the step size. Below are some method errors for various step sizes.
+
+##### 200 steps
+![Error for 200 steps](./err_1.png)
+
+##### 335 steps
+![Error for 335 steps](./err_2.png)
+
+##### 500 steps
+![Error for 500 steps](./err_3.png)
+
+
+## Screenshots
+![Top View](./1542025598831.png)
+![Chart customisation](./1542025672219.png)
